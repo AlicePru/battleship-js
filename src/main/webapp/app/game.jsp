@@ -31,14 +31,14 @@
 <script>
 
 function fire() {
-    console.log(JSON.stringify(data));
+    //console.log(JSON.stringify(data));
     fetch("<c:url value='/api/game/fire'/>", {
         "method": "POST",
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(data)
+       // body: JSON.stringify(data)
     }).then(function (response) {
         console.log("DONE");
         checkStatus();
