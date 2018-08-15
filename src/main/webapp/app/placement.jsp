@@ -44,7 +44,7 @@
             "method": "POST",
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
         }).then(function (response) {
@@ -68,7 +68,10 @@
             if (game.status === "PLACEMENT" && game.playerActive) {
                 document.getElementById("placement-field").classList.remove("w3-hide");
                 document.getElementById("wait-another").classList.add("w3-hide");
-            } else {
+            } else if (game.status === 'STARTED') {
+                location.href = "<c:url value='/app/game.jsp'/>";
+            }
+            else {
                 document.getElementById("placement-field").classList.add("w3-hide");
                 document.getElementById("wait-another").classList.remove("w3-hide");
                 window.setTimeout(function () {

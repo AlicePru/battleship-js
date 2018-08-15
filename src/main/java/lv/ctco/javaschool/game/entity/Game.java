@@ -15,12 +15,11 @@ public class Game {
     @ManyToOne
     private User player1;
     private boolean player1Active;
-    private boolean player1Inactive;
 
     @ManyToOne
     private User player2;
     private boolean player2Active;
-    private boolean player2Inactive;
+
 
 
     @Enumerated(EnumType.STRING)
