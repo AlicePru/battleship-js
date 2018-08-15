@@ -15,10 +15,13 @@ public class Game {
     @ManyToOne
     private User player1;
     private boolean player1Active;
+    private boolean player1Inactive;
 
     @ManyToOne
     private User player2;
     private boolean player2Active;
+    private boolean player2Inactive;
+
 
     @Enumerated(EnumType.STRING)
     private GameStatus status;
@@ -32,4 +35,18 @@ public class Game {
             throw new IllegalArgumentException();
         }
     }
+
+    public void setPlayerActive(User player, Boolean active){
+        if (player.equals(player1))
+        {
+           player1Active=active;
+        }
+        else if(player.equals(player2)){
+            player2Active=active;
+        }
+        else {
+            throw new IllegalArgumentException();
+        }
+    }
+
 }

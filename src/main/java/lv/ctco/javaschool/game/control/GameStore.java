@@ -1,6 +1,6 @@
 package lv.ctco.javaschool.game.control;
 
-import com.sun.tools.javac.util.List;
+
 import lv.ctco.javaschool.auth.entity.domain.User;
 import lv.ctco.javaschool.game.entity.Cell;
 import lv.ctco.javaschool.game.entity.CellState;
@@ -36,6 +36,19 @@ public class GameStore {
                         "  and (g.player1 = :user " +
                         "   or g.player2 = :user)", Game.class)
                 .setParameter("status", status)
+                .setParameter("user", user)
+                .getResultStream()
+                .findFirst();
+    }
+
+    public Optional<Game> getOpenGameFor(User user) {
+        return em.createQuery(
+                "select g " +
+                        "from Game g " +
+                        "where g.status <> :status " +
+                        "  and (g.player1 = :user " +
+                        "   or g.player2 = :user)", Game.class)
+                .setParameter("status", GameStatus.FINISHED)
                 .setParameter("user", user)
                 .getResultStream()
                 .findFirst();
