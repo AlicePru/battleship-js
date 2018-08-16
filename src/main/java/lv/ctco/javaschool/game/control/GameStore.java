@@ -1,6 +1,8 @@
 package lv.ctco.javaschool.game.control;
 
 
+import lombok.var;
+import lv.ctco.javaschool.auth.control.UserStore;
 import lv.ctco.javaschool.auth.entity.domain.User;
 import lv.ctco.javaschool.game.entity.Cell;
 import lv.ctco.javaschool.game.entity.CellState;
@@ -8,6 +10,7 @@ import lv.ctco.javaschool.game.entity.Game;
 import lv.ctco.javaschool.game.entity.GameStatus;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
@@ -16,8 +19,11 @@ import java.util.Optional;
 
 @Stateless
 public class GameStore {
+
     @PersistenceContext
     private EntityManager em;
+    @Inject
+    private UserStore userStore;
 
     public Optional<Game> getIncompleteGame() {
         return em.createQuery(
@@ -97,6 +103,14 @@ public class GameStore {
                 .forEach(c->em.persist(c));
     }
 
+    public List<Cell> getCells(Game game, User player) {
+        return em.createQuery(
+                "select c from Cell c where c.game = :game and c.user = :user ", Cell.class)
+                .setParameter("game", game)
+                .setParameter("user", player)
+                .getResultList();
+    }
+
     private void clearField(Game game, User player, boolean targetArea) {
         List<Cell> cells = em.createQuery("select c from Cell c where c.game=:game and c.user=:user and c.targetArea=:targetArea", Cell.class)
                 .setParameter("game", game)
@@ -104,5 +118,14 @@ public class GameStore {
                 .setParameter("targetArea", targetArea)
                 .getResultList();
         cells.forEach(c -> em.remove(c));
+    }
+
+    private void getEnemyShips(Game g,User player,boolean targetArea, List<String> ships){
+
+
+
+
+        )
+
     }
 }
