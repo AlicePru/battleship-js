@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Int;
+
 @Path("/game")
 @Stateless
 @Log
@@ -112,23 +114,24 @@ public class GameApi {
         game.ifPresent(g -> {
             User enemy = g.getEnemy(currentUser);
             Optional<Cell> cell = gameStore.findCell(g, enemy, address, false);
-
+            Integer sink = 0;
             if (cell.isPresent()) {
                 Cell c = cell.get();
-                if (c.getState() == CellState.SHIP) {
+                if (c.getState() != CellState.HIT) {
                     c.setState(CellState.HIT);
                     gameStore.setCellState(g, currentUser, address, true, CellState.HIT);
                     log.info(CellState.HIT + address);
+                    sink++;
                 }
 
-                else if (c.getState() == CellState.HIT) {
-
-                }
-            }
-            else  {
-                gameStore.setCellState(g,enemy,address,false,CellState.MISS);
+            } else {
+                gameStore.setCellState(g, enemy, address, false, CellState.MISS);
                 gameStore.setCellState(g, currentUser, address, true, CellState.MISS);
                 log.info(CellState.MISS + address);
+
+            }
+
+            if(sink==16){
 
             }
 
@@ -160,6 +163,21 @@ public class GameApi {
         return dto;
     }
 
+//    @GET
+//    @RolesAllowed({"ADMIN", "USER"})
+//    @Path("/sink")
+//    public void getSinkShips(){
+//        User currentUser = userStore.getCurrentUser();
+//        Optional<Game> game = gameStore.getStartedGameFor(currentUser, GameStatus.STARTED);
+//        return game.map(g -> {
+//            List<Cell> cells = gameStore.getCells(g, currentUser);
+//        Integer sink=0;
+//        while (sink!=16)
+//        {
+//           if()
+//        }
+//
+//    }
 
 }
 

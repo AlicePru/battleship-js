@@ -132,6 +132,11 @@
         });
 
     }
+
+    function countHitedShips() {
+
+    }
+
     function fire() {
         console.log("firing");
         var checked = document.querySelector('input[name=addr]:checked');
@@ -146,6 +151,7 @@
         }).then(function (response) {
             console.log("DONE");
             checkStatus();
+            countHitedShips();
         });
     }
 
