@@ -48,4 +48,15 @@ public class Game {
         }
     }
 
+    public User getEnemy(User player) {
+     if(player.equals(player1))  {
+         return player2;
+     }
+     else if(player.equals(player2)){
+         return player1;
+     } else {
+         throw new IllegalArgumentException();
+     }
+    }
+
 }

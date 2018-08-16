@@ -66,19 +66,19 @@ public class GameApi {
         Optional<Game> game = gameStore.getStartedGameFor(currentUser, GameStatus.PLACEMENT);
         game.ifPresent(g -> {
             if (g.isPlayerActive(currentUser)) {
-                List<String> ships=new ArrayList<>();
+                List<String> ships = new ArrayList<>();
                 for (Map.Entry<String, JsonValue> pair : field.entrySet()) {
                     log.info(pair.getKey() + " - " + pair.getValue());
-                    String addr=pair.getKey();
-                    String value=((JsonString)pair.getValue()).getString();
-                    if("SHIP".equals(value)){
+                    String addr = pair.getKey();
+                    String value = ((JsonString) pair.getValue()).getString();
+                    if ("SHIP".equals(value)) {
                         ships.add(addr);
                     }
 
                 }
-                gameStore.setShips(g,currentUser,false,ships);
-                g.setPlayerActive(currentUser,false);
-                if(!g.isPlayer1Active()&&!g.isPlayer2Active()){
+                gameStore.setShips(g, currentUser, false, ships);
+                g.setPlayerActive(currentUser, false);
+                if (!g.isPlayer1Active() && !g.isPlayer2Active()) {
                     g.setStatus(GameStatus.STARTED);
                     g.setPlayer1Active(true);
                     g.setPlayer2Active(false);
@@ -89,9 +89,9 @@ public class GameApi {
     }
 
     @GET
-    @RolesAllowed({"ADMIN","USER"})
+    @RolesAllowed({"ADMIN", "USER"})
     @Path("/status")
-    public GameDto getGameStatus(){
+    public GameDto getGameStatus() {
         User currentUser = userStore.getCurrentUser();
         Optional<Game> game = gameStore.getOpenGameFor(currentUser);
         return game.map(g -> {
@@ -103,13 +103,35 @@ public class GameApi {
     }
 
     @POST
-    @RolesAllowed({"ADMIN","USER"})
+    @RolesAllowed({"ADMIN", "USER"})
     @Path("/fire/{address}")
     public void doFire(@PathParam("address") String address) {
         log.info("Firing to " + address);
         User currentUser = userStore.getCurrentUser();
         Optional<Game> game = gameStore.getOpenGameFor(currentUser);
         game.ifPresent(g -> {
+            User enemy = g.getEnemy(currentUser);
+            Optional<Cell> cell = gameStore.findCell(g, enemy, address, false);
+
+            if (cell.isPresent()) {
+                Cell c = cell.get();
+                if (c.getState() == CellState.SHIP) {
+                    c.setState(CellState.HIT);
+                    gameStore.setCellState(g, currentUser, address, true, CellState.HIT);
+                    log.info(CellState.HIT + address);
+                }
+
+                else if (c.getState() == CellState.HIT) {
+
+                }
+            }
+            else  {
+                gameStore.setCellState(g,enemy,address,false,CellState.MISS);
+                gameStore.setCellState(g, currentUser, address, true, CellState.MISS);
+                log.info(CellState.MISS + address);
+
+            }
+
             boolean p1a = g.isPlayer1Active();
             g.setPlayer1Active(!p1a);
             g.setPlayer2Active(p1a);
@@ -117,13 +139,13 @@ public class GameApi {
     }
 
     @GET
-    @RolesAllowed({"ADMIN","USER"})
+    @RolesAllowed({"ADMIN", "USER"})
     @Path("/placement")
-    public List<CellStateDto> getShipsPlacement(){
-    User currentUser=userStore.getCurrentUser();
-        Optional<Game> game = gameStore.getStartedGameFor(currentUser,GameStatus.STARTED);
+    public List<CellStateDto> getShipsPlacement() {
+        User currentUser = userStore.getCurrentUser();
+        Optional<Game> game = gameStore.getStartedGameFor(currentUser, GameStatus.STARTED);
         return game.map(g -> {
-            List<Cell> cells=gameStore.getCells(g,currentUser);
+            List<Cell> cells = gameStore.getCells(g, currentUser);
             return cells.stream()
                     .map(this::convertToDto)
                     .collect(Collectors.toList());
@@ -137,6 +159,8 @@ public class GameApi {
         dto.setState(cell.getState());
         return dto;
     }
-    }
+
+
+}
 
 

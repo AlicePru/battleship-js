@@ -46,7 +46,8 @@
             <tr>
                 <td><c:out value="${row}"/></td>
                 <c:forTokens items="A,B,C,D,E,F,G,H,I,J" delims="," var="col">
-                    <td id="t${col}${row}"><input name="addr" type="radio" id="${col}${row}"/></td>                </c:forTokens>
+                    <td id="t${col}${row}"><input name="addr" type="radio" id="${col}${row}"/></td>
+                </c:forTokens>
             </tr>
         </c:forTokens>
     </table>
@@ -136,7 +137,7 @@
         var checked = document.querySelector('input[name=addr]:checked');
         var checkedAddr = checked.id;
         console.log("firing addr " + checkedAddr);
-        fetch("<c:url value='/api/game/fire'/>/"+checkedAddr, {
+        fetch("<c:url value='/api/game/fire'/>/" + checkedAddr, {
             "method": "POST",
             headers: {
                 'Accept': 'application/json',

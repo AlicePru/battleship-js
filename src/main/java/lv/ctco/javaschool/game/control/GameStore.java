@@ -1,7 +1,6 @@
 package lv.ctco.javaschool.game.control;
 
 
-import lombok.var;
 import lv.ctco.javaschool.auth.control.UserStore;
 import lv.ctco.javaschool.auth.entity.domain.User;
 import lv.ctco.javaschool.game.entity.Cell;
@@ -13,7 +12,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +22,8 @@ public class GameStore {
     private EntityManager em;
     @Inject
     private UserStore userStore;
+    @Inject
+    private GameStore gameStore;
 
     public Optional<Game> getIncompleteGame() {
         return em.createQuery(
@@ -63,7 +63,7 @@ public class GameStore {
     }
 
 
-    public void setCellState(Game game, User player, String address, boolean targetArea, CellState state) {
+    public Optional<Cell> findCell(Game game, User player, String address, boolean targetArea) {
         Optional<Cell> cell = em.createQuery(
                 "select c from Cell c " +
                         "where c.game = :game " +
@@ -76,6 +76,10 @@ public class GameStore {
                 .setParameter("address", address)
                 .getResultStream()
                 .findFirst();
+        return cell;
+    }
+    public void setCellState(Game game, User player, String address, boolean targetArea, CellState state) {
+        Optional<Cell> cell = findCell(game, player, address, targetArea);
         if (cell.isPresent()) {
             cell.get().setState(state);
         } else {
@@ -120,12 +124,5 @@ public class GameStore {
         cells.forEach(c -> em.remove(c));
     }
 
-    private void getEnemyShips(Game g,User player,boolean targetArea, List<String> ships){
 
-
-
-
-        )
-
-    }
 }
