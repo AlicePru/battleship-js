@@ -139,15 +139,11 @@ public class GameApi {
     }
 
     private void isFinish(Game game, User enemy) {
-        //User currentUser = userStore.getCurrentUser();
-//        Optional<Game> game = gameStore.getLastGameFor(currentUser);
-//        game.ifPresent(g -> {
         List<Cell> cell = gameStore.getCells(game, enemy);
         boolean isShip = cell.stream().anyMatch(c -> !c.isTargetArea() && c.getState() == CellState.SHIP);
         if (!isShip) {
             game.setStatus(GameStatus.FINISHED);
         }
-//        });
     }
 
     @GET

@@ -140,9 +140,7 @@
 
     }
 
-    function countHitedShips() {
 
-    }
 
     function fire() {
         console.log("firing");
@@ -158,7 +156,6 @@
         }).then(function (response) {
             console.log("DONE");
             checkStatus();
-            countHitedShips();
         });
     }
 
