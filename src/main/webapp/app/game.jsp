@@ -92,13 +92,13 @@
                 document.getElementById("wait-another").classList.add("w3-hide");
                 document.getElementById("select-fire").classList.remove("w3-hide");
                 hideRadioButtons(true);
-
+                console.log("waiting")
 
             } else if (game.status === "STARTED" && !game.playerActive) {
                 document.getElementById("wait-another").classList.remove("w3-hide");
                 document.getElementById("select-fire").classList.add("w3-hide");
                 hideRadioButtons(false);
-
+                console.log("fairing")
                 window.setTimeout(function () {
                     checkStatus();
                 }, 1000);

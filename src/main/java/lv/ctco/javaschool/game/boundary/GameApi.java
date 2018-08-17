@@ -95,7 +95,7 @@ public class GameApi {
     @Path("/status")
     public GameDto getGameStatus() {
         User currentUser = userStore.getCurrentUser();
-        Optional<Game> game = gameStore.getOpenGameFor(currentUser);
+        Optional<Game> game = gameStore.getLastGameFor(currentUser);
         return game.map(g -> {
             GameDto dto = new GameDto();
             dto.setStatus(g.getStatus());
@@ -119,7 +119,7 @@ public class GameApi {
                 if (c.getState() != CellState.HIT) {
                     c.setState(CellState.HIT);
                     gameStore.setCellState(g, currentUser, address, true, CellState.HIT);
-                   isFinish();
+                    isFinish(g, enemy);
                     log.info(CellState.HIT + address);
 
                 }
@@ -137,17 +137,17 @@ public class GameApi {
             g.setPlayer2Active(p1a);
         });
     }
-    public  void isFinish() {
-        User currentUser = userStore.getCurrentUser();
-        Optional<Game> game1 = gameStore.getStartedGameFor(currentUser, GameStatus.STARTED);
-        game1.ifPresent(g -> {
-            List<Cell> cell = gameStore.getCells(g, currentUser);
-            boolean isShip = cell.stream().allMatch(c -> c.getState() == CellState.SHIP);
-            if (!isShip) {
-                g.setStatus(GameStatus.FINISHED);
 
-            }
-        });
+    private void isFinish(Game game, User enemy) {
+        //User currentUser = userStore.getCurrentUser();
+//        Optional<Game> game = gameStore.getLastGameFor(currentUser);
+//        game.ifPresent(g -> {
+        List<Cell> cell = gameStore.getCells(game, enemy);
+        boolean isShip = cell.stream().anyMatch(c -> !c.isTargetArea() && c.getState() == CellState.SHIP);
+        if (!isShip) {
+            game.setStatus(GameStatus.FINISHED);
+        }
+//        });
     }
 
     @GET
@@ -172,21 +172,6 @@ public class GameApi {
         return dto;
     }
 
-//    @GET
-//    @RolesAllowed({"ADMIN", "USER"})
-//    @Path("/sink")
-//    public void getSinkShips(){
-//        User currentUser = userStore.getCurrentUser();
-//        Optional<Game> game = gameStore.getStartedGameFor(currentUser, GameStatus.STARTED);
-//        return game.map(g -> {
-//            List<Cell> cells = gameStore.getCells(g, currentUser);
-//        Integer sink=0;
-//        while (sink!=16)
-//        {
-//           if()
-//        }
-//
-//    }
 
 }
 
