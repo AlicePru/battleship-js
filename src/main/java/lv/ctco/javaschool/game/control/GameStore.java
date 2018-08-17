@@ -10,6 +10,7 @@ import lv.ctco.javaschool.game.entity.GameStatus;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.jws.soap.SOAPBinding;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
@@ -92,6 +93,8 @@ public class GameStore {
             em.persist(newCell);
         }
     }
+
+
 
     public void setShips(Game g, User player, boolean targetArea, List<String> ships) {
         clearField(g, player, targetArea);

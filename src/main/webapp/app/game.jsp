@@ -22,9 +22,11 @@
         td.SHIP {
             background-color: black;
         }
+
         td.MISS {
             background-color: aqua;
         }
+
         td.HIT {
             background-color: red;
         }
@@ -34,7 +36,7 @@
 <div id="wait-another" class="w3-hide">
     <h1>Please wait for your turn to shot</h1>
 </div>
-<div style="display: inline-block" >
+<div style="display: inline-block">
     <table>
         <tr>
             <td>&nbsp;</td>
@@ -89,20 +91,25 @@
             if (game.status === "STARTED" && game.playerActive) {
                 document.getElementById("wait-another").classList.add("w3-hide");
                 document.getElementById("select-fire").classList.remove("w3-hide");
-                hideRadioButtons(true)
+                hideRadioButtons(true);
+
 
             } else if (game.status === "STARTED" && !game.playerActive) {
                 document.getElementById("wait-another").classList.remove("w3-hide");
                 document.getElementById("select-fire").classList.add("w3-hide");
-                hideRadioButtons(false)
+                hideRadioButtons(false);
+
                 window.setTimeout(function () {
                     checkStatus();
                 }, 1000);
+            } else if (game.status === "FINISHED") {
+                location.href = "<c:url value='/app/finish.jsp'/>";
+                return;
             } else {
-            return;
-        }
-        drawShips();
-    });
+                return;
+            }
+            drawShips();
+        });
     }
     function drawShips() {
         fetch("<c:url value='/api/game/placement'/>", {
@@ -154,7 +161,6 @@
             countHitedShips();
         });
     }
-
 
 
 </script>

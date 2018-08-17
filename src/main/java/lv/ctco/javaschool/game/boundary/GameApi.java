@@ -114,14 +114,14 @@ public class GameApi {
         game.ifPresent(g -> {
             User enemy = g.getEnemy(currentUser);
             Optional<Cell> cell = gameStore.findCell(g, enemy, address, false);
-            Integer sink = 0;
             if (cell.isPresent()) {
                 Cell c = cell.get();
                 if (c.getState() != CellState.HIT) {
                     c.setState(CellState.HIT);
                     gameStore.setCellState(g, currentUser, address, true, CellState.HIT);
+                   isFinish();
                     log.info(CellState.HIT + address);
-                    sink++;
+
                 }
 
             } else {
@@ -131,13 +131,22 @@ public class GameApi {
 
             }
 
-            if(sink==16){
-
-            }
 
             boolean p1a = g.isPlayer1Active();
             g.setPlayer1Active(!p1a);
             g.setPlayer2Active(p1a);
+        });
+    }
+    public  void isFinish() {
+        User currentUser = userStore.getCurrentUser();
+        Optional<Game> game1 = gameStore.getStartedGameFor(currentUser, GameStatus.STARTED);
+        game1.ifPresent(g -> {
+            List<Cell> cell = gameStore.getCells(g, currentUser);
+            boolean isShip = cell.stream().allMatch(c -> c.getState() == CellState.SHIP);
+            if (!isShip) {
+                g.setStatus(GameStatus.FINISHED);
+
+            }
         });
     }
 
