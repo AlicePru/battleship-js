@@ -37,6 +37,8 @@ public class GameApi {
     private UserStore userStore;
     @Inject
     private GameStore gameStore;
+    @Inject
+    private User user;
 
 
     @POST
@@ -110,11 +112,13 @@ public class GameApi {
     public void doFire(@PathParam("address") String address) {
         log.info("Firing to " + address);
         User currentUser = userStore.getCurrentUser();
+
         Optional<Game> game = gameStore.getOpenGameFor(currentUser);
         game.ifPresent(g -> {
             User enemy = g.getEnemy(currentUser);
             Optional<Cell> cell = gameStore.findCell(g, enemy, address, false);
             if (cell.isPresent()) {
+
                 Cell c = cell.get();
                 if (c.getState() != CellState.HIT) {
                     c.setState(CellState.HIT);
@@ -124,6 +128,7 @@ public class GameApi {
 
                 }
 
+
             } else {
                 gameStore.setCellState(g, enemy, address, false, CellState.MISS);
                 gameStore.setCellState(g, currentUser, address, true, CellState.MISS);
@@ -131,10 +136,13 @@ public class GameApi {
 
             }
 
-
             boolean p1a = g.isPlayer1Active();
             g.setPlayer1Active(!p1a);
             g.setPlayer2Active(p1a);
+            g.count1PlayerMoves(p1a);
+            g.count2PlayerMoves(!p1a);
+
+
         });
     }
 
@@ -142,8 +150,30 @@ public class GameApi {
         List<Cell> cell = gameStore.getCells(game, enemy);
         boolean isShip = cell.stream().anyMatch(c -> !c.isTargetArea() && c.getState() == CellState.SHIP);
         if (!isShip) {
+
             game.setStatus(GameStatus.FINISHED);
         }
+
+    }
+
+    @GET
+    @RolesAllowed({"ADMIN", "USER"})
+    @Path("/wintable")
+    public List<UserDto> getWinners() {
+        String username = user.getUsername();
+        Integer move = user.getMove();
+        List<User> users = userStore.getTopUsers(username, move);
+        return users.stream()
+                .map(this::convertToUserDto)
+                .collect(Collectors.toList());
+
+    }
+
+    private UserDto convertToUserDto(User user) {
+        UserDto dto = new UserDto();
+        dto.setUsername(user.getUsername());
+        dto.setMove(user.getMove());
+        return dto;
     }
 
     @GET

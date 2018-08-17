@@ -16,4 +16,6 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    private Integer move;
 }

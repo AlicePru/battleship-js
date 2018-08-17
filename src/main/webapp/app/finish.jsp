@@ -2,6 +2,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <title>Result</title>
 </head>
 <body onload="checkWinner()">
@@ -26,12 +28,11 @@
         }).then(function (game) {
             console.log(JSON.stringify(game));
             if( game.status==="FINISHED" &&game.playerActive){
-                document.getElementById("winner").classList.remove("w3-hide");
+                document.getElementById("winner").classList.add("w3-hide");
                 document.getElementById("loser").classList.remove("w3-hide");
 
             }else if( game.status==="FINISHED" && !game.playerActive) {
-
-                    document.getElementById("winner").classList.add("w3-hide");
+                    document.getElementById("winner").classList.remove("w3-hide");
                     document.getElementById("loser").classList.add("w3-hide");
 
             }

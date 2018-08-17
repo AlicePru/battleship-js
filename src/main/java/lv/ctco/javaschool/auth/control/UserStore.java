@@ -6,6 +6,10 @@ import lv.ctco.javaschool.auth.control.exceptions.InvalidUsernameException;
 import lv.ctco.javaschool.auth.control.exceptions.UsernameAlreadyExistsException;
 import lv.ctco.javaschool.auth.entity.domain.Role;
 import lv.ctco.javaschool.auth.entity.domain.User;
+import lv.ctco.javaschool.game.entity.Cell;
+import lv.ctco.javaschool.game.entity.CellState;
+import lv.ctco.javaschool.game.entity.Game;
+import lv.ctco.javaschool.game.entity.GameStatus;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -74,6 +78,24 @@ public class UserStore {
         if (password == null || password.length() < MIN_PASSWORD_LENGTH || password.startsWith(" ") || password.endsWith(" ")) {
             throw new InvalidPasswordException();
         }
+    }
+
+    public List<User> getTopUsers(String username,Integer move) {
+        return em.createQuery
+                ("select u from User u where u.username=:user and u.move=:move order by u.move asc ")
+                .setParameter("user", username)
+                .setParameter("move", move)
+                .setMaxResults(10)
+                .getResultList();
+    }
+
+    public List<Cell> getMoves(){
+        return em.createQuery("select c from Cell c where c.state=:state1 or c.state=:state2",Cell.class)
+                .setParameter("state1", CellState.HIT)
+                .setParameter("state2",CellState.MISS)
+                .getResultList()
+                .size();
+
     }
 
 }

@@ -67,7 +67,7 @@ public class GameStore {
         return em.createQuery(
                 "select g " +
                         "from Game g " +
-                        "where g.player1 = :user or g.player2 = :user order by g.id ", Game.class)
+                        "where g.player1 = :user or g.player2 = :user order by g.id desc ", Game.class)
                 .setParameter("user", user)
                 .setMaxResults(1)
                 .getResultStream()
