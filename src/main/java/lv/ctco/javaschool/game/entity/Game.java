@@ -35,20 +35,25 @@ public class Game {
         }
     }
 
-    public int count1PlayerMoves(Boolean active){
-        if(player1Active==active){
+    public int count1PlayerMoves() {
+
+        if (isPlayer1Active()){
             move1++;
-        }
-
-        return move1;
-    }
-
-    public int count2PlayerMoves(Boolean active){
-        if(player1Active==active){
+            return move1;
+        } else if(isPlayer2Active()) {
             move2++;
+            return move2;
+        }else {
+            throw new IllegalArgumentException();
         }
-        return move2;
     }
+
+//    public int count2PlayerMoves(User player2){
+//        if(isPlayerActive(player2)){
+//            move2++;
+//        }
+//        return move2;
+//    }
 
 
     public void setPlayerActive(User player, Boolean active) {

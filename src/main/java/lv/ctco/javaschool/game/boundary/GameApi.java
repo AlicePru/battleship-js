@@ -40,6 +40,8 @@ public class GameApi {
     @Inject
     private User user;
 
+    @Inject
+    private Game game;
 
     @POST
     @RolesAllowed({"ADMIN", "USER"})
@@ -112,7 +114,6 @@ public class GameApi {
     public void doFire(@PathParam("address") String address) {
         log.info("Firing to " + address);
         User currentUser = userStore.getCurrentUser();
-
         Optional<Game> game = gameStore.getOpenGameFor(currentUser);
         game.ifPresent(g -> {
             User enemy = g.getEnemy(currentUser);
@@ -123,6 +124,7 @@ public class GameApi {
                 if (c.getState() != CellState.HIT) {
                     c.setState(CellState.HIT);
                     gameStore.setCellState(g, currentUser, address, true, CellState.HIT);
+                   // currentUser.setMove(currentUser.getMove() + 1);
                     isFinish(g, enemy);
                     log.info(CellState.HIT + address);
 
@@ -132,15 +134,19 @@ public class GameApi {
             } else {
                 gameStore.setCellState(g, enemy, address, false, CellState.MISS);
                 gameStore.setCellState(g, currentUser, address, true, CellState.MISS);
+
                 log.info(CellState.MISS + address);
 
             }
-
+            if (currentUser.getMove() == null) {
+                currentUser.setMove(1);
+            } else {
+                currentUser.setMove(currentUser.getMove() + 1);
+            }
+            log.info("count moves " + currentUser.getMove());
             boolean p1a = g.isPlayer1Active();
             g.setPlayer1Active(!p1a);
             g.setPlayer2Active(p1a);
-            g.count1PlayerMoves(p1a);
-            g.count2PlayerMoves(!p1a);
 
 
         });
@@ -160,9 +166,11 @@ public class GameApi {
     @RolesAllowed({"ADMIN", "USER"})
     @Path("/wintable")
     public List<UserDto> getWinners() {
-        String username = user.getUsername();
-        Integer move = user.getMove();
-        List<User> users = userStore.getTopUsers(username, move);
+//        Long userId = user.getId();
+     //  Long gameId = game.getId();
+//        Integer move = user.getMove();
+
+        List<User> users = userStore.getTopUsers();
         return users.stream()
                 .map(this::convertToUserDto)
                 .collect(Collectors.toList());
@@ -171,7 +179,8 @@ public class GameApi {
 
     private UserDto convertToUserDto(User user) {
         UserDto dto = new UserDto();
-        dto.setUsername(user.getUsername());
+        dto.setGameId(game.getId());
+        dto.setUserID(user.getId());
         dto.setMove(user.getMove());
         return dto;
     }

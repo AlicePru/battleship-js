@@ -14,8 +14,8 @@ public class User {
     @Column(unique = true)
     private String username;
     private String password;
+    private Integer move = 0;
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private Integer move;
 }
