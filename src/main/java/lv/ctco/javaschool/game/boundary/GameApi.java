@@ -179,7 +179,7 @@ public class GameApi {
 
     private UserDto convertToUserDto(User user) {
         UserDto dto = new UserDto();
-        dto.setGameId(game.getId());
+//        dto.setGameId(game.getId());
         dto.setUserID(user.getId());
         dto.setMove(user.getMove());
         return dto;

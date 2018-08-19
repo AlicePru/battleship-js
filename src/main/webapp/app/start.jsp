@@ -36,8 +36,8 @@
             users.forEach(function (u) {
                 var row = table.insertRow();
                // var cell1=row.insertCell(0);
-               var cell2=row.insertCell(1);
-               var cell3=row.insertCell(2);
+               var cell2=row.insertCell(0);
+               var cell3=row.insertCell(1);
                // cell1.innerHTML(u.gameId);
                cell2.innerHTML(u.userID);
                cell3.innerHTML(u.move);
