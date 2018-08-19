@@ -138,5 +138,12 @@ public class GameStore {
         cells.forEach(c -> em.remove(c));
     }
 
+    public List<Game> getTopUsers() {
+        return em.createQuery
+                ("select g from Game g where g.status=:status order by g.moves asc ")
+                .setParameter("status", GameStatus.FINISHED)
+                .setMaxResults(10)
+                .getResultList();
+    }
 
 }

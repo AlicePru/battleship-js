@@ -12,15 +12,22 @@ public class Game {
     @GeneratedValue
     private Long id;
 
+
     @ManyToOne
     private User player1;
     private boolean player1Active;
-    private int move1;
+    private boolean player1Winner;
+
 
     @ManyToOne
     private User player2;
     private boolean player2Active;
-    private int move2;
+    private boolean player2Winner;
+
+    @Column
+    private int moves;
+    private String winner;
+
 
     @Enumerated(EnumType.STRING)
     private GameStatus status;
@@ -34,26 +41,6 @@ public class Game {
             throw new IllegalArgumentException();
         }
     }
-
-    public int count1PlayerMoves() {
-
-        if (isPlayer1Active()){
-            move1++;
-            return move1;
-        } else if(isPlayer2Active()) {
-            move2++;
-            return move2;
-        }else {
-            throw new IllegalArgumentException();
-        }
-    }
-
-//    public int count2PlayerMoves(User player2){
-//        if(isPlayerActive(player2)){
-//            move2++;
-//        }
-//        return move2;
-//    }
 
 
     public void setPlayerActive(User player, Boolean active) {

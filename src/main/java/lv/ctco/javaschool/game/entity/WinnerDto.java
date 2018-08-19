@@ -3,9 +3,9 @@ package lv.ctco.javaschool.game.entity;
 import lombok.Data;
 
 @Data
-public class UserDto {
+public class WinnerDto {
     private Long gameId;
-    private Long userID;
+    private String username;
     private Integer move;
 
 }

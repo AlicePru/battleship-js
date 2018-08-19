@@ -80,13 +80,5 @@ public class UserStore {
         }
     }
 
-    public List<User> getTopUsers() {
-        return em.createQuery
-                ("select u from User u order by u.move asc ")
-                .setMaxResults(10)
-                .getResultList();
-    }
-
-
 
 }

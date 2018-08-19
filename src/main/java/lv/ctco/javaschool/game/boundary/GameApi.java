@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Int;
-
 @Path("/game")
 @Stateless
 @Log
@@ -46,11 +44,13 @@ public class GameApi {
     @POST
     @RolesAllowed({"ADMIN", "USER"})
     public void startGame() {
+
         User currentUser = userStore.getCurrentUser();
         Optional<Game> game = gameStore.getIncompleteGame();
 
         game.ifPresent(g -> {
             g.setPlayer2(currentUser);
+            currentUser.setMove(1);
             g.setStatus(GameStatus.PLACEMENT);
             g.setPlayer1Active(true);
             g.setPlayer2Active(true);
@@ -59,6 +59,7 @@ public class GameApi {
         if (!game.isPresent()) {
             Game newGame = new Game();
             newGame.setPlayer1(currentUser);
+            currentUser.setMove(1);
             newGame.setStatus(GameStatus.INCOMPLETE);
             em.persist(newGame);
         }
@@ -124,10 +125,13 @@ public class GameApi {
                 if (c.getState() != CellState.HIT) {
                     c.setState(CellState.HIT);
                     gameStore.setCellState(g, currentUser, address, true, CellState.HIT);
-                   // currentUser.setMove(currentUser.getMove() + 1);
                     isFinish(g, enemy);
                     log.info(CellState.HIT + address);
-
+                    if (currentUser.getMove() == null) {
+                        currentUser.setMove(1);
+                    } else {
+                        currentUser.setMove(currentUser.getMove() + 1);
+                    }
                 }
 
 
@@ -136,13 +140,13 @@ public class GameApi {
                 gameStore.setCellState(g, currentUser, address, true, CellState.MISS);
 
                 log.info(CellState.MISS + address);
+                if (currentUser.getMove() == null) {
+                    currentUser.setMove(1);
+                } else {
+                    currentUser.setMove(currentUser.getMove() + 1);
+                }
+            }
 
-            }
-            if (currentUser.getMove() == null) {
-                currentUser.setMove(1);
-            } else {
-                currentUser.setMove(currentUser.getMove() + 1);
-            }
             log.info("count moves " + currentUser.getMove());
             boolean p1a = g.isPlayer1Active();
             g.setPlayer1Active(!p1a);
@@ -156,7 +160,9 @@ public class GameApi {
         List<Cell> cell = gameStore.getCells(game, enemy);
         boolean isShip = cell.stream().anyMatch(c -> !c.isTargetArea() && c.getState() == CellState.SHIP);
         if (!isShip) {
-
+            User player = userStore.getCurrentUser();
+            game.setWinner(player.getUsername());
+            game.setMoves(player.getMove());
             game.setStatus(GameStatus.FINISHED);
         }
 
@@ -165,23 +171,20 @@ public class GameApi {
     @GET
     @RolesAllowed({"ADMIN", "USER"})
     @Path("/wintable")
-    public List<UserDto> getWinners() {
-//        Long userId = user.getId();
-     //  Long gameId = game.getId();
-//        Integer move = user.getMove();
+    public List<WinnerDto> getWinners() {
 
-        List<User> users = userStore.getTopUsers();
-        return users.stream()
+        List<Game> winners = gameStore.getTopUsers();
+        return winners.stream()
                 .map(this::convertToUserDto)
                 .collect(Collectors.toList());
 
     }
 
-    private UserDto convertToUserDto(User user) {
-        UserDto dto = new UserDto();
-//        dto.setGameId(game.getId());
-        dto.setUserID(user.getId());
-        dto.setMove(user.getMove());
+    private WinnerDto convertToUserDto(Game game) {
+        WinnerDto dto = new WinnerDto();
+        dto.setGameId(game.getId());
+        dto.setUsername(game.getWinner());
+        dto.setMove(game.getMoves());
         return dto;
     }
 
